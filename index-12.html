@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2457e6">
+<title>Uma Mãozinha</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#f3f6fb;--ink:#14213d;--mut:#64748b;--pri:#2457e6;--pri2:#1a3fb0;--acc:#ff8a1f;--line:#e2e8f0;--wa:#1faa59;--red:#e03131}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:40px}
+.wrap{max-width:1000px;margin:0 auto;padding:0 14px}
+header.top{background:linear-gradient(135deg,#2457e6,#5b3fd6);color:#fff;padding:22px 0 28px;border-radius:0 0 26px 26px}
+header.top h1{font-size:26px;font-weight:800;letter-spacing:-.5px}
+header.top p{opacity:.9;font-size:14px;margin-top:4px}
+.search{margin-top:14px;position:relative}
+.search input{width:100%;padding:14px 16px;border:0;border-radius:14px;font-size:16px;outline:none;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:16px 14px 6px;max-width:1000px;margin:0 auto;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:9px 16px;border-radius:99px;background:#fff;border:1.5px solid var(--line);font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.chip small{opacity:.6;margin-left:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:10px 14px}
+.card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 10px rgba(20,33,61,.08);cursor:pointer;display:flex;flex-direction:column}
+.ph{position:relative;aspect-ratio:1/1;background:#dfe7f5;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
+.ini{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:800;color:#8aa0d6}
+.tag{position:absolute;top:8px;left:8px;background:var(--acc);color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px}
+.cb{padding:10px 11px 12px;display:flex;flex-direction:column;gap:3px;flex:1}
+.cb b{font-size:15px;line-height:1.2}
+.cb small{color:var(--mut);font-size:12.5px}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:700;cursor:pointer;background:var(--pri);color:#fff}
+.btn.wa{background:var(--wa)}
+.btn.out{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.gray{background:#e8edf5;color:var(--ink)}
+.btn.red{background:#fff;color:var(--red);border:1.5px solid var(--red)}
+.btn.sm{padding:8px 12px;font-size:13px;border-radius:10px}
+.btn.full{width:100%}
+.cb .btn{margin-top:auto;padding:10px;font-size:14px}
+.empty{text-align:center;color:var(--mut);padding:50px 20px;font-size:15px}
+footer{text-align:center;margin-top:26px;color:var(--mut);font-size:13px}
+footer a{color:var(--mut);cursor:pointer;text-decoration:underline}
+#modal{position:fixed;inset:0;background:rgba(10,18,40,.6);display:none;align-items:flex-end;justify-content:center;z-index:50}
+#modal.on{display:flex}
+.sheet{background:#fff;width:100%;max-width:620px;max-height:94vh;overflow-y:auto;border-radius:24px 24px 0 0;padding:18px 16px 26px;position:relative}
+@media(min-width:700px){#modal{align-items:center}.sheet{border-radius:24px}}
+.x{position:absolute;top:10px;right:12px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:20px;cursor:pointer;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.big{width:calc(100% + 32px);margin:-18px -16px 14px;aspect-ratio:1/1;max-height:70vh;background:#dfe7f5;overflow:hidden;border-radius:24px 24px 0 0}
+.big img{width:100%;height:100%;object-fit:cover;object-position:50% 25%;display:block}
+.sheet h2{font-size:22px}
+.sub{color:var(--mut);font-size:14px;margin:4px 0 10px}
+.desc{font-size:15px;line-height:1.5;margin:10px 0 14px;white-space:pre-wrap}
+.gal{display:flex;gap:8px;overflow-x:auto;margin:6px 0 16px;padding-bottom:4px}
+.gal img{height:130px;width:auto;border-radius:12px;flex:none;cursor:zoom-in}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row .btn{flex:1}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:99}
+#lb.on{display:flex}
+#lb img{max-width:100%;max-height:100%;object-fit:contain}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#14213d;color:#fff;padding:12px 20px;border-radius:99px;font-size:14px;z-index:120;display:none}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px;color:#334155}
+input,select,textarea{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:11px;font-size:16px;font-family:inherit;background:#fff;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--pri)}
+textarea{min-height:80px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chk{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:600;font-size:14px}
+.chk input{width:20px;height:20px}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-top:14px}
+.tabs button{flex:none;border:0;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.18);color:#fff;font-weight:700;font-size:14px;cursor:pointer}
+.tabs button.on{background:#fff;color:var(--pri)}
+.box{background:#fff;border-radius:16px;padding:14px;margin:12px 14px;box-shadow:0 2px 10px rgba(20,33,61,.06)}
+.box h3{font-size:16px;margin-bottom:8px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 14px}
+.stat{background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(20,33,61,.06)}
+.stat span{font-size:12px;color:var(--mut);font-weight:700}
+.stat b{display:block;font-size:21px;margin-top:4px}
+.it{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.it:last-child{border:0}
+.it img,.it .ini{width:54px;height:54px;border-radius:12px;object-fit:cover;flex:none;font-size:24px;background:#dfe7f5}
+.it .inf{flex:1;min-width:0}
+.it .inf b{display:block;font-size:15px}
+.it .inf small{color:var(--mut);font-size:12.5px}
+.it .ac{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11.5px;font-weight:700}
+.pill.g{background:#dcf5e5;color:#157a3b}.pill.y{background:#fff0d6;color:#a35a00}.pill.r{background:#fde2e2;color:#b02222}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--mut);font-size:12px}
+.scroll{overflow-x:auto}
+.pv{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.pv .p{position:relative;width:82px;height:82px}
+.pv img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+.pv .p button{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:0;background:var(--red);color:#fff;font-weight:800;cursor:pointer}
+.hint{font-size:12.5px;color:var(--mut);margin-top:4px}
+.login{max-width:380px;margin:30px auto;background:#fff;padding:22px;border-radius:20px;box-shadow:0 2px 14px rgba(20,33,61,.1)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal"></div>
+<div id="lb" onclick="this.classList.remove('on')"><img id="lbimg" alt=""></div>
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ============================================================
+   >>> COLE AQUI A CONFIGURAÇÃO DO SEU FIREBASE <<<
+   (Firebase > Configurações do projeto > Seus apps > Web > firebaseConfig)
+   ============================================================ */
+const CONFIG = {
+  apiKey: "AIzaSyBx9FMUzfJZw0GYtxCRHRN8fa0fMiscwZE",
+  authDomain: "umamaozinha.firebaseapp.com",
+  projectId: "umamaozinha",
+  appId: "1:957177087598:web:adf1ce11203d4d6385887f"
+};
+const NOME_APP = "Uma Mãozinha";
+const ADMIN_EMAIL = "admin@umamaozinha.com"; /* e-mail fixo e escondido; você só digita a senha */
+const SUBTITULO = "Profissionais e lojas de Paraopeba, direto no WhatsApp";
+/* ============================================================ */
+
+const CONFIG_OK = CONFIG.apiKey && CONFIG.apiKey !== "COLE_AQUI";
+let db, auth;
+if (CONFIG_OK) { firebase.initializeApp(CONFIG); db = firebase.firestore(); auth = firebase.auth(); }
+
+let cats = [], profs = [], lancs = [], contatos = [], user = null;
+let S = { view: 'pub', cat: '', q: '', tab: 'resumo', mes: mesAtual(), filtro: 'todos' };
+let ordem = {}, fotosCache = {}, F = {};
+let unL = null, unC = null;
+
+/* ---------- utilidades ---------- */
+function mesAtual() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+function rangeMes(m) { const [y, mo] = m.split('-').map(Number); return [new Date(y, mo - 1, 1).getTime(), new Date(y, mo, 1).getTime()]; }
+function mesLabel(m) { const [y, mo] = m.split('-'); const n = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']; return n[mo - 1] + ' de ' + y; }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function norm(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+function brl(n) { return Number(n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+function num(v) { const n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? null : n; }
+function $(id) { return document.getElementById(id); }
+function toast(t) { const e = $('toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => e.style.display = 'none', 2400); }
+function catNome(id) { const c = cats.find(c => c.id === id); return c ? c.nome : ''; }
+function ef(p, campo) { if (p[campo] != null && p[campo] !== '') return Number(p[campo]); const c = cats.find(c => c.id === p.catId); return c && c[campo] != null && c[campo] !== '' ? Number(c[campo]) : 0; }
+function telLimpo(t) { let d = String(t || '').replace(/\D/g, ''); if (d.length <= 11) d = '55' + d; return d; }
+function abrirModal(h) { $('modal').innerHTML = '<div class="sheet">' + h + '</div>'; $('modal').classList.add('on'); }
+function fechar() { $('modal').classList.remove('on'); $('modal').innerHTML = ''; }
+$('modal').addEventListener('click', e => { if (e.target.id === 'modal') fechar(); });
+function verFoto(src) { $('lbimg').src = src; $('lb').classList.add('on'); }
+
+function comprimir(file, max, q, limite) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => {
+      const i = new Image();
+      i.onload = () => {
+        const s = Math.min(1, max / Math.max(i.width, i.height));
+        const w = Math.round(i.width * s), h = Math.round(i.height * s);
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        const x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
+        x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); x.drawImage(i, 0, 0, w, h);
+        let qq = q, out = c.toDataURL('image/jpeg', qq);
+        while (out.length > limite && qq > 0.5) { qq -= 0.05; out = c.toDataURL('image/jpeg', qq); }
+        res(out);
+      };
+      i.onerror = rej; i.src = e.target.result;
+    };
+    r.onerror = rej; r.readAsDataURL(file);
+  });
+}
+
+/* ---------- dados em tempo real ---------- */
+if (CONFIG_OK) {
+  db.collection('categorias').onSnapshot(s => { cats = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => a.nome.localeCompare(b.nome)); render(); }, e => console.log(e));
+  db.collection('profissionais').onSnapshot(s => { profs = s.docs.map(d => ({ id: d.id, ...d.data() })); profs.forEach(p => { if (!(p.id in ordem)) ordem[p.id] = Math.random(); }); render(); }, e => console.log(e));
+  auth.onAuthStateChanged(u => { user = u; if (u) subAdmin(); else { if (unL) unL(); if (unC) unC(); lancs = []; contatos = []; } render(); });
+}
+function subAdmin() {
+  if (unL) unL(); if (unC) unC(); if (!user) return;
+  unL = db.collection('lancamentos').where('mes', '==', S.mes).onSnapshot(s => { lancs = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.ts - a.ts); render(); }, e => console.log(e));
+  const [a, b] = rangeMes(S.mes);
+  unC = db.collection('contatos').where('ts', '>=', a).where('ts', '<', b).onSnapshot(s => { contatos = s.docs.map(d => d.data()); render(); }, e => console.log(e));
+}
+function trocarMes(v) { if (!v) return; S.mes = v; subAdmin(); }
+
+/* ---------- roteamento ---------- */
+function render() {
+  if (!CONFIG_OK) { $('app').innerHTML = '<div class="login"><h2>Falta configurar</h2><p class="hint" style="font-size:14px;margin-top:8px">Abra o arquivo index.html e cole a configuração do seu Firebase no começo do código (bloco CONFIG).</p></div>'; return; }
+  S.view === 'admin' ? renderAdmin() : renderPub();
+}
+function irAdmin() { S.view = 'admin'; location.hash = 'admin'; render(); window.scrollTo(0, 0); }
+function irPub() { S.view = 'pub'; location.hash = ''; render(); window.scrollTo(0, 0); }
+if (location.hash === '#admin') S.view = 'admin';
+render();
+
+/* ============================================================
+   CATÁLOGO PÚBLICO
+   ============================================================ */
+function renderPub() {
+  const ativos = profs.filter(p => p.ativo !== false);
+  const usadas = cats.filter(c => ativos.some(p => p.catId === c.id));
+  const chips = `<div class="chip ${S.cat === '' ? 'on' : ''}" onclick="setCat('')">Todos<small>${ativos.length}</small></div>` +
+    usadas.map(c => `<div class="chip ${S.cat === c.id ? 'on' : ''}" onclick="setCat('${c.id}')">${esc(c.nome)}<small>${ativos.filter(p => p.catId === c.id).length}</small></div>`).join('');
+  $('app').innerHTML = `
+  <header class="top"><div class="wrap">
+    <h1>🤝 ${esc(NOME_APP)}</h1><p>${esc(SUBTITULO)}</p>
+    <div class="search"><input id="busca" type="search" placeholder="Buscar: pedreiro, farmácia, nome, bairro..." value="${esc(S.q)}" oninput="S.q=this.value;listar()"></div>
+  </div></header>
+  <div class="chips">${chips}</div>
+  <div id="lista"></div>
+  <footer><button class="btn gray sm" onclick="compartilhar()">📲 Compartilhar este app</button><p style="margin-top:14px"><a onclick="irAdmin()">Área do administrador</a></p></footer>`;
+  listar();
+}
+function setCat(id) { S.cat = id; renderPub(); }
+function listar() {
+  const q = norm(S.q);
+  const lista = profs.filter(p => p.ativo !== false && (!S.cat || p.catId === S.cat) &&
+    (!q || norm([p.nome, catNome(p.catId), p.bairro, p.desc].join(' ')).includes(q)))
+    .sort((a, b) => (b.destaque ? 1 : 0) - (a.destaque ? 1 : 0) || ordem[a.id] - ordem[b.id]);
+  const el = $('lista'); if (!el) return;
+  if (!lista.length) { el.innerHTML = '<div class="empty">Nenhum profissional encontrado.<br>Tente outra busca ou categoria.</div>'; return; }
+  el.innerHTML = '<div class="grid">' + lista.map(p => `
+    <div class="card" onclick="abrirPerfil('${p.id}')">
+      <div class="ph">${p.thumb ? `<img src="${p.thumb}" alt="${esc(p.nome)}" loading="lazy">` : `<div class="ini">${esc((p.nome || '?')[0])}</div>`}${p.destaque ? '<span class="tag">⭐ Destaque</span>' : ''}</div>
+      <div class="cb"><b>${esc(p.nome)}</b><small>${esc(catNome(p.catId))}${p.bairro ? ' • ' + esc(p.bairro) : ''}</small>
+      <button class="btn wa" onclick="event.stopPropagation();chamar('${p.id}')">💬 WhatsApp</button></div>
+    </div>`).join('') + '</div>';
+}
+function chamar(id) {
+  const p = profs.find(x => x.id === id); if (!p) return;
+  db.collection('contatos').add({ profId: id, ts: Date.now() }).catch(() => {});
+  const msg = encodeURIComponent('Olá ' + p.nome + '! Vi seu perfil no ' + NOME_APP + ' e gostaria de um orçamento.');
+  window.open('https://wa.me/' + telLimpo(p.tel) + '?text=' + msg, '_blank');
+}
+async function abrirPerfil(id) {
+  const p = profs.find(x => x.id === id); if (!p) return;
+  const topo = src => src ? `<img src="${src}" alt="">` : `<div class="ini">${esc(p.nome[0])}</div>`;
+  abrirModal(`<button class="x" onclick="fechar()">×</button>
+    <div class="big" id="pfBig">${topo(p.thumb)}</div>
+    <h2>${esc(p.nome)}</h2>
+    <div class="sub">${esc(catNome(p.catId))}${p.bairro ? ' • ' + esc(p.bairro) : ''}${p.destaque ? ' • ⭐ Destaque' : ''}</div>
+    ${p.desc ? `<div class="desc">${esc(p.desc)}</div>` : ''}
+    <div id="pfGal"></div>
+    <button class="btn wa full" onclick="chamar('${p.id}')">💬 Chamar no WhatsApp</button>`);
+  try {
+    if (!fotosCache[id]) { const s = await db.collection('fotos').where('profId', '==', id).get(); fotosCache[id] = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => a.ordem - b.ordem); }
+    const fs = fotosCache[id], per = fs.find(f => f.tipo === 'perfil'), sv = fs.filter(f => f.tipo === 'servico');
+    if (per && $('pfBig')) { $('pfBig').innerHTML = `<img src="${per.data}" alt="" style="cursor:zoom-in" onclick="verFoto(this.src)">`; }
+    if (sv.length && $('pfGal')) $('pfGal').innerHTML = '<label>Trabalhos realizados</label><div class="gal">' + sv.map(f => `<img src="${f.data}" alt="" onclick="verFoto(this.src)">`).join('') + '</div>';
+  } catch (e) { console.log(e); }
+}
+function compartilhar() {
+  const url = location.href.split('#')[0];
+  if (navigator.share) navigator.share({ title: NOME_APP, text: 'Encontre profissionais e lojas da cidade no ' + NOME_APP, url }).catch(() => {});
+  else { navigator.clipboard && navigator.clipboard.writeText(url); toast('Link copiado!'); }
+}
+
+/* ============================================================
+   PAINEL DO ADMINISTRADOR
+   ============================================================ */
+function renderAdmin() {
+  if (!user) {
+    $('app').innerHTML = `<div class="login"><h2>Área do administrador</h2>
+      <label>Senha do administrador</label><input id="ls" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')entrar()">
+      <button class="btn full" style="margin-top:16px" onclick="entrar()">Entrar</button>
+      <button class="btn gray full" style="margin-top:8px" onclick="irPub()">← Voltar ao catálogo</button></div>`;
+    return;
+  }
+  const tabs = [['resumo', '📊 Resumo'], ['profs', '👷 Profissionais'], ['cats', '🏷️ Categorias'], ['cobr', '💰 Cobranças']];
+  const corpo = { resumo: tabResumo, profs: tabProfs, cats: tabCats, cobr: tabCobr }[S.tab]();
+  $('app').innerHTML = `<header class="top"><div class="wrap"><h1>Painel • ${esc(NOME_APP)}</h1>
+    <div class="tabs">${tabs.map(t => `<button class="${S.tab === t[0] ? 'on' : ''}" onclick="S.tab='${t[0]}';render()">${t[1]}</button>`).join('')}</div></div></header>
+    <div class="wrap" style="padding:0">${corpo}
+    <div style="display:flex;gap:8px;padding:6px 14px"><button class="btn gray sm" onclick="irPub()">← Ver catálogo</button><button class="btn red sm" onclick="auth.signOut()">Sair</button></div></div>`;
+}
+function entrar() {
+  auth.signInWithEmailAndPassword(ADMIN_EMAIL, $('ls').value).catch(() => alert('Senha incorreta.'));
+}
+function seletorMes() {
+  return `<div class="box" style="margin-bottom:0"><label style="margin-top:0">Mês</label><input type="month" value="${S.mes}" onchange="trocarMes(this.value)"></div>`;
+}
+
+/* ---------- Resumo ---------- */
+function tabResumo() {
+  const linhas = profs.map(p => ({
+    p,
+    c: contatos.filter(x => x.profId === p.id).length,
+    ar: lancs.filter(l => l.profId === p.id && !l.pago).reduce((s, l) => s + l.valor, 0),
+    rc: lancs.filter(l => l.profId === p.id && l.pago).reduce((s, l) => s + l.valor, 0)
+  })).filter(l => l.p.ativo !== false || l.c || l.ar || l.rc).sort((a, b) => b.c - a.c);
+  const tAr = lancs.filter(l => !l.pago).reduce((s, l) => s + l.valor, 0);
+  const tRc = lancs.filter(l => l.pago).reduce((s, l) => s + l.valor, 0);
+  return seletorMes() + `<div class="stats">
+    <div class="stat"><span>A RECEBER</span><b style="color:#a35a00">${brl(tAr)}</b></div>
+    <div class="stat"><span>RECEBIDO</span><b style="color:#157a3b">${brl(tRc)}</b></div>
+    <div class="stat"><span>CONTATOS NO MÊS</span><b>${contatos.length}</b></div>
+    <div class="stat"><span>PROFISSIONAIS ATIVOS</span><b>${profs.filter(p => p.ativo !== false).length}</b></div></div>
+    <div class="box"><h3>Por profissional • ${mesLabel(S.mes)}</h3><div class="scroll"><table>
+    <tr><th>Profissional</th><th>Contatos</th><th>A receber</th><th>Recebido</th></tr>
+    ${linhas.map(l => `<tr><td><b>${esc(l.p.nome)}</b><br><small style="color:var(--mut)">${esc(catNome(l.p.catId))}</small></td><td>${l.c}</td><td>${brl(l.ar)}</td><td>${brl(l.rc)}</td></tr>`).join('') || '<tr><td colspan="4">Sem dados ainda.</td></tr>'}
+    </table></div></div>`;
+}
+
+/* ---------- Categorias ---------- */
+function tabCats() {
+  return `<div class="box"><button class="btn full" onclick="formCat()">+ Nova categoria</button>
+    <p class="hint">Digite o nome que quiser: Pedreiro, Eletricista, Farmácia, Motorista...</p></div>
+    <div class="box"><h3>Categorias (${cats.length})</h3>
+    ${cats.map(c => `<div class="it"><div class="inf"><b>${esc(c.nome)}</b><small>${profs.filter(p => p.catId === c.id).length} profissional(is)${c.pct != null && c.pct !== '' ? ' • padrão ' + c.pct + '%' : ''}${c.mensal ? ' • mensal ' + brl(c.mensal) : ''}</small></div>
+    <div class="ac"><button class="btn gray sm" onclick="formCat('${c.id}')">Editar</button><button class="btn red sm" onclick="delCat('${c.id}')">Excluir</button></div></div>`).join('') || '<div class="empty">Nenhuma categoria ainda.</div>'}</div>`;
+}
+function formCat(id) {
+  const c = id ? cats.find(x => x.id === id) : {};
+  abrirModal(`<button class="x" onclick="fechar()">×</button><h2>${id ? 'Editar' : 'Nova'} categoria</h2>
+    <label>Nome da categoria</label><input id="cn" value="${esc(c.nome || '')}" placeholder="Ex: Pedreiro">
+    <div class="two"><div><label>% padrão</label><input id="cp" inputmode="decimal" value="${c.pct != null ? c.pct : ''}" placeholder="Ex: 3"></div>
+    <div><label>Mensalidade padrão (R$)</label><input id="cm" inputmode="decimal" value="${c.mensal != null ? c.mensal : ''}" placeholder="Ex: 50"></div></div>
+    <p class="hint">Opcional. Vale para os profissionais da categoria que não tiverem valor próprio.</p>
+    <button class="btn full" style="margin-top:16px" onclick="salvarCat('${id || ''}')">Salvar</button>`);
+}
+async function salvarCat(id) {
+  const nome = $('cn').value.trim(); if (!nome) return alert('Digite o nome da categoria.');
+  const d = { nome, pct: num($('cp').value), mensal: num($('cm').value) };
+  try { id ? await db.collection('categorias').doc(id).set(d, { merge: true }) : await db.collection('categorias').add(d); fechar(); toast('Categoria salva'); } catch (e) { alert('Erro ao salvar: ' + e.message); }
+}
+async function delCat(id) {
+  if (profs.some(p => p.catId === id)) return alert('Essa categoria tem profissionais. Mova ou exclua eles primeiro.');
+  if (confirm('Excluir esta categoria?')) await db.collection('categorias').doc(id).delete();
+}
+
+/* ---------- Profissionais ---------- */
+function tabProfs() {
+  const cont = id => contatos.filter(x => x.profId === id).length;
+  return `<div class="box"><button class="btn full" onclick="formProf()">+ Cadastrar profissional</button>
+    ${!cats.length ? '<p class="hint" style="color:var(--red)">Crie pelo menos uma categoria antes de cadastrar.</p>' : ''}</div>
+    <div class="box"><h3>Profissionais (${profs.length})</h3>
+    ${profs.slice().sort((a, b) => a.nome.localeCompare(b.nome)).map(p => `<div class="it">
+      ${p.thumb ? `<img src="${p.thumb}" alt="">` : `<div class="ini">${esc(p.nome[0])}</div>`}
+      <div class="inf"><b>${esc(p.nome)}</b><small>${esc(catNome(p.catId))} • ${cont(p.id)} contatos no mês</small><br>
+      <span class="pill ${p.ativo !== false ? 'g' : 'r'}">${p.ativo !== false ? 'Ativo' : 'Oculto'}</span>${p.destaque ? ' <span class="pill y">⭐ Destaque</span>' : ''}</div>
+      <div class="ac"><button class="btn gray sm" onclick="formProf('${p.id}')">Editar</button></div></div>`).join('') || '<div class="empty">Nenhum profissional ainda.</div>'}</div>`;
+}
+async function formProf(id) {
+  if (!cats.length) return alert('Crie uma categoria primeiro.');
+  const p = id ? profs.find(x => x.id === id) : {};
+  F = { id: id || '', perfilNovo: null, thumbNovo: null, perfilAtual: null, perfilDocId: '', servAtual: [], servNovas: [], remover: [] };
+  abrirModal(`<button class="x" onclick="fechar()">×</button><h2>${id ? 'Editar' : 'Cadastrar'} profissional</h2>
+    <label>Nome</label><input id="fn" value="${esc(p.nome || '')}" placeholder="Nome do profissional ou loja">
+    <label>Categoria</label><select id="fc">${cats.map(c => `<option value="${c.id}" ${p.catId === c.id ? 'selected' : ''}>${esc(c.nome)}</option>`).join('')}</select>
+    <div class="two"><div><label>WhatsApp (com DDD)</label><input id="ft" inputmode="tel" value="${esc(p.tel || '')}" placeholder="31999999999"></div>
+    <div><label>Bairro</label><input id="fb" value="${esc(p.bairro || '')}"></div></div>
+    <label>Descrição</label><textarea id="fd" placeholder="Fale do serviço, experiência, horários...">${esc(p.desc || '')}</textarea>
+    <label>📷 Foto do profissional</label><input type="file" accept="image/*" onchange="escolherPerfil(this)">
+    <div class="pv" id="pvPerfil"></div>
+    <label>🖼️ Fotos dos serviços (até 6)</label><input type="file" accept="image/*" multiple onchange="escolherServ(this)">
+    <div class="pv" id="pvServ"></div>
+    <label>💰 Cobrança deste profissional</label>
+    <div class="two"><div><input id="fp" inputmode="decimal" value="${p.pct != null ? p.pct : ''}" placeholder="% (ex: 3)"></div>
+    <div><input id="fm" inputmode="decimal" value="${p.mensal != null ? p.mensal : ''}" placeholder="Mensal R$ (ex: 50)"></div></div>
+    <p class="hint">Deixe vazio para usar o padrão da categoria. Pode usar só %, só mensalidade ou os dois.</p>
+    <div class="chk"><input type="checkbox" id="fe" ${p.destaque ? 'checked' : ''}><label style="margin:0">⭐ Destaque (aparece primeiro)</label></div>
+    <div class="chk"><input type="checkbox" id="fa" ${p.ativo !== false ? 'checked' : ''}><label style="margin:0">Visível no catálogo</label></div>
+    <button class="btn full" id="fsv" style="margin-top:18px" onclick="salvarProf()">Salvar</button>
+    ${id ? `<button class="btn red full" style="margin-top:8px" onclick="delProf('${id}')">Excluir profissional</button>` : ''}`);
+  if (id) {
+    try {
+      const s = await db.collection('fotos').where('profId', '==', id).get();
+      const fs = s.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => a.ordem - b.ordem);
+      const per = fs.find(f => f.tipo === 'perfil');
+      if (per) { F.perfilAtual = per.data; F.perfilDocId = per.id; }
+      F.servAtual = fs.filter(f => f.tipo === 'servico').map(f => ({ docId: f.id, data: f.data }));
+    } catch (e) { console.log(e); }
+  }
+  prevForm();
+}
+function prevForm() {
+  const per = F.perfilNovo || F.perfilAtual || (F.id && (profs.find(x => x.id === F.id) || {}).thumb);
+  if ($('pvPerfil')) $('pvPerfil').innerHTML = per ? `<div class="p" style="width:110px;height:110px"><img src="${per}" alt=""></div>` : '<span class="hint">Nenhuma foto escolhida</span>';
+  if ($('pvServ')) $('pvServ').innerHTML = F.servAtual.map((s, i) => `<div class="p"><img src="${s.data}" alt=""><button onclick="remServ(${i},false)">×</button></div>`).join('') +
+    F.servNovas.map((s, i) => `<div class="p"><img src="${s}" alt=""><button onclick="remServ(${i},true)">×</button></div>`).join('');
+}
+async function escolherPerfil(inp) {
+  const f = inp.files[0]; if (!f) return;
+  try { F.perfilNovo = await comprimir(f, 1100, 0.88, 330000); F.thumbNovo = await comprimir(f, 520, 0.82, 70000); prevForm(); } catch (e) { alert('Não consegui ler essa foto.'); }
+}
+async function escolherServ(inp) {
+  const arq = Array.from(inp.files);
+  for (const f of arq) {
+    if (F.servAtual.length + F.servNovas.length >= 6) { alert('Máximo de 6 fotos de serviço.'); break; }
+    try { F.servNovas.push(await comprimir(f, 1100, 0.85, 300000)); } catch (e) { }
+  }
+  inp.value = ''; prevForm();
+}
+function remServ(i, nova) {
+  if (nova) F.servNovas.splice(i, 1); else { F.remover.push(F.servAtual[i].docId); F.servAtual.splice(i, 1); }
+  prevForm();
+}
+async function salvarProf() {
+  const nome = $('fn').value.trim(), tel = $('ft').value.trim();
+  if (!nome) return alert('Digite o nome.');
+  if (telLimpo(tel).length < 12) return alert('Digite o WhatsApp com DDD.');
+  if (!F.id && !F.perfilNovo) return alert('Escolha a foto do profissional.');
+  const btn = $('fsv'); btn.disabled = true; btn.textContent = 'Salvando...';
+  const d = { nome, catId: $('fc').value, tel, bairro: $('fb').value.trim(), desc: $('fd').value.trim(), pct: num($('fp').value), mensal: num($('fm').value), destaque: $('fe').checked, ativo: $('fa').checked };
+  try {
+    const ref = F.id ? db.collection('profissionais').doc(F.id) : db.collection('profissionais').doc();
+    if (F.thumbNovo) d.thumb = F.thumbNovo;
+    if (!F.id) d.criadoEm = Date.now();
+    await ref.set(d, { merge: true });
+    const pid = ref.id;
+    if (F.perfilNovo) {
+      if (F.perfilDocId) await db.collection('fotos').doc(F.perfilDocId).delete();
+      await db.collection('fotos').add({ profId: pid, tipo: 'perfil', data: F.perfilNovo, ordem: 0 });
+    }
+    for (const dc of F.remover) await db.collection('fotos').doc(dc).delete();
+    let o = Date.now();
+    for (const s of F.servNovas) await db.collection('fotos').add({ profId: pid, tipo: 'servico', data: s, ordem: o++ });
+    delete fotosCache[pid]; fechar(); toast('Profissional salvo!');
+  } catch (e) { alert('Erro ao salvar: ' + e.message); btn.disabled = false; btn.textContent = 'Salvar'; }
+}
+async function delProf(id) {
+  if (!confirm('Excluir este profissional e as fotos dele?')) return;
+  try {
+    const s = await db.collection('fotos').where('profId', '==', id).get();
+    for (const d of s.docs) await d.ref.delete();
+    await db.collection('profissionais').doc(id).delete();
+    delete fotosCache[id]; fechar(); toast('Excluído');
+  } catch (e) { alert('Erro: ' + e.message); }
+}
+
+/* ---------- Cobranças ---------- */
+function tabCobr() {
+  let l = lancs;
+  if (S.filtro === 'pagar') l = l.filter(x => !x.pago); else if (S.filtro === 'pago') l = l.filter(x => x.pago);
+  const tAr = lancs.filter(x => !x.pago).reduce((s, x) => s + x.valor, 0), tRc = lancs.filter(x => x.pago).reduce((s, x) => s + x.valor, 0);
+  return seletorMes() + `<div class="box"><div class="row"><button class="btn" onclick="formServico()">+ Serviço fechado</button><button class="btn out" onclick="gerarMensalidades()">Gerar mensalidades</button></div>
+    <p class="hint">Serviço fechado: registre o valor e o app calcula a comissão. Mensalidades: cria a cobrança do mês para quem tem valor mensal.</p></div>
+    <div class="stats"><div class="stat"><span>A RECEBER</span><b style="color:#a35a00">${brl(tAr)}</b></div><div class="stat"><span>RECEBIDO</span><b style="color:#157a3b">${brl(tRc)}</b></div></div>
+    <div class="box"><label style="margin-top:0">Mostrar</label><select onchange="S.filtro=this.value;render()">
+      <option value="todos" ${S.filtro === 'todos' ? 'selected' : ''}>Todos</option><option value="pagar" ${S.filtro === 'pagar' ? 'selected' : ''}>A receber</option><option value="pago" ${S.filtro === 'pago' ? 'selected' : ''}>Recebidos</option></select></div>
+    <div class="box"><h3>${mesLabel(S.mes)}</h3>
+    ${l.map(x => `<div class="it"><div class="inf"><b>${esc(x.profNome)}</b>
+      <small>${x.tipo === 'mensalidade' ? 'Mensalidade' : 'Comissão de ' + brl(x.valorServico) + (x.pct != null ? ' (' + x.pct + '%)' : '')}${x.obs ? ' • ' + esc(x.obs) : ''}</small><br>
+      <b style="font-size:16px">${brl(x.valor)}</b> <span class="pill ${x.pago ? 'g' : 'y'}">${x.pago ? 'Pago' : 'A receber'}</span></div>
+      <div class="ac"><button class="btn ${x.pago ? 'gray' : ''} sm" onclick="pagar('${x.id}',${!x.pago})">${x.pago ? 'Desfazer' : '✔ Pago'}</button>
+      ${x.pago ? '' : `<button class="btn wa sm" onclick="cobrar('${x.id}')">Cobrar</button>`}
+      <button class="btn red sm" onclick="delLanc('${x.id}')">×</button></div></div>`).join('') || '<div class="empty">Nada registrado neste mês.</div>'}</div>`;
+}
+function formServico() {
+  const ativos = profs.filter(p => p.ativo !== false).sort((a, b) => a.nome.localeCompare(b.nome));
+  if (!ativos.length) return alert('Cadastre um profissional primeiro.');
+  abrirModal(`<button class="x" onclick="fechar()">×</button><h2>Serviço fechado</h2>
+    <label>Profissional</label><select id="sp" onchange="preencheServ()">${ativos.map(p => `<option value="${p.id}">${esc(p.nome)} (${esc(catNome(p.catId))})</option>`).join('')}</select>
+    <label>Valor do serviço (R$)</label><input id="sv" inputmode="decimal" placeholder="Ex: 20000" oninput="calcServ()">
+    <div class="two"><div><label>Sua porcentagem (%)</label><input id="spc" inputmode="decimal" oninput="calcServ()"></div>
+    <div><label>Comissão (R$)</label><input id="sc" inputmode="decimal"></div></div>
+    <p class="hint">A comissão se calcula sozinha, mas você pode digitar um valor fixo direto no campo da comissão (ex: 800).</p>
+    <label>Observação (opcional)</label><input id="so" placeholder="Ex: Casa do Sr. João">
+    <button class="btn full" style="margin-top:16px" onclick="salvarServ()">Registrar</button>`);
+  preencheServ();
+}
+function preencheServ() { const p = profs.find(x => x.id === $('sp').value); $('spc').value = p ? (ef(p, 'pct') || '') : ''; calcServ(); }
+function calcServ() { const v = num($('sv').value), pc = num($('spc').value); $('sc').value = (v != null && pc != null) ? (Math.round(v * pc) / 100).toFixed(2) : ''; }
+async function salvarServ() {
+  const p = profs.find(x => x.id === $('sp').value), vs = num($('sv').value), val = num($('sc').value);
+  if (!vs || !val) return alert('Preencha o valor do serviço e a comissão.');
+  try {
+    await db.collection('lancamentos').add({ tipo: 'comissao', profId: p.id, profNome: p.nome, valorServico: vs, pct: num($('spc').value), valor: val, mes: S.mes, pago: false, obs: $('so').value.trim(), ts: Date.now() });
+    fechar(); toast('Registrado!');
+  } catch (e) { alert('Erro: ' + e.message); }
+}
+async function gerarMensalidades() {
+  let n = 0;
+  for (const p of profs.filter(p => p.ativo !== false)) {
+    const m = ef(p, 'mensal');
+    if (m > 0 && !lancs.some(l => l.tipo === 'mensalidade' && l.profId === p.id)) {
+      await db.collection('lancamentos').add({ tipo: 'mensalidade', profId: p.id, profNome: p.nome, valor: m, mes: S.mes, pago: false, obs: '', ts: Date.now() }); n++;
+    }
+  }
+  toast(n ? n + ' mensalidade(s) criada(s)' : 'Nenhuma mensalidade nova');
+}
+async function pagar(id, v) { await db.collection('lancamentos').doc(id).update({ pago: v, pagoEm: v ? Date.now() : null }); }
+async function delLanc(id) { if (confirm('Excluir este lançamento?')) await db.collection('lancamentos').doc(id).delete(); }
+function cobrar(id) {
+  const l = lancs.find(x => x.id === id), p = l && profs.find(x => x.id === l.profId); if (!p) return;
+  const msg = 'Olá ' + p.nome + '! Passando para lembrar da ' + (l.tipo === 'mensalidade' ? 'mensalidade' : 'comissão') + ' do ' + NOME_APP + ' referente a ' + mesLabel(l.mes) + ': ' + brl(l.valor) + '. Obrigado!';
+  window.open('https://wa.me/' + telLimpo(p.tel) + '?text=' + encodeURIComponent(msg), '_blank');
+}
+</script>
+</body>
+</html>
